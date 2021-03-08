@@ -6,6 +6,7 @@ services:
       - "5000:5000"
     environment:
       - INDEX_NAME
+      - INDEX_BERT_NAME
     depends_on:
       - elasticsearch
       - bertserving
@@ -29,6 +30,28 @@ services:
       - PATH_MODEL=${PATH_MODEL}
     volumes:
       - "${PATH_MODEL}:/model"
+      
+  scrapyd:
+    build: ./bertelscrapyd
+    ports:
+      - "6800:6800"
+    environment:
+      - INDEX_NAME
+      - INDEX_BERT_NAME
+    volumes:
+      - ./scrapydata:/var/lib/scrapyd
+      - /usr/local/lib/python3.7/dist-packages
+    restart: unless-stopped
+    
+  scrapy:
+    image: vimagick/scrapyd:py3
+    command: bash
+    volumes:
+      - ./scrapybatch:/code
+    working_dir: /code
+    restart: unless-stopped
+
+
 volumes:
   es-data:
     driver: local

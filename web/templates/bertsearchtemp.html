@@ -5,10 +5,10 @@
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
   <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet"
     type="text/css">
-  <link href="static/css/materialdesignicons.min.css" rel="stylesheet">
-  <link href="static/css/all.css" rel="stylesheet">
-  <link href="static/css/materialdesignicons1.min.css" rel="stylesheet">
-  <link href="static/css/vuetify.min.css" rel="stylesheet">
+  <link href="../static/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="../static/css/all.css" rel="stylesheet">
+  <link href="../static/css/materialdesignicons1.min.css" rel="stylesheet">
+  <link href="../static/css/vuetify.min.css" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
   <style>
     .v-toolbar__content {
@@ -39,11 +39,10 @@
               <v-card max-width="700" flat v-for="(item, index) in result.hits.hits" :key="index">
                 <v-card-title>[[ item._source.title ]]</v-card-title>
                 <v-card-text>[[ item._source.text.slice(0, 300) ]]...</v-card-text>
-                <!--
                 <v-card-actions>
                   <v-chip class="primary">[[ item._score ]]</v-chip>
                 </v-card-actions>
-              -->
+              
               </v-card>
             </template>
           </v-col>
@@ -52,9 +51,9 @@
     </v-app>
   </div>
 
-  <script src="static/js/vue.js"></script>
-  <script src="static/js/vuetify.js"></script>
-  <script src="static/js/axios.min.js"></script>
+  <script src="../static/js/vue.js"></script>
+  <script src="../static/js/vuetify.js"></script>
+  <script src="../static/js/axios.min.js"></script>
   <script>
     axios.defaults.xsrfCookieName = 'csrftoken';
     axios.defaults.xsrfHeaderName = 'X-CSRFToken';
@@ -73,7 +72,7 @@
       },
       methods: {
         search() {
-          axios.get(`${base_url}searchsimple?q=${this.query}`).then(response => {
+          axios.get(`${base_url}/../searchbert?q=${this.query}`).then(response => {
             this.result = response.data;
           })
         },
