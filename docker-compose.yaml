@@ -3,20 +3,28 @@ services:
   web:
     build: ./web
     ports:
-      - "5000:5000"
+      - "80:5000"
     environment:
       - INDEX_NAME
       - INDEX_BERT_NAME
+      - DEFUSR
+      - BERTADM
+      - SEARCH_SIZE
     depends_on:
       - elasticsearch
       - bertserving
-
+    networks:
+      - frontend
+      - backend
+      
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.3.2
     ports:
       - "9200:9200"
     volumes:
       - es-data:/usr/share/elasticsearch/data
+    networks:
+      - backend
     tty: true
     environment:
       discovery.type: single-node
@@ -30,6 +38,8 @@ services:
       - PATH_MODEL=${PATH_MODEL}
     volumes:
       - "${PATH_MODEL}:/model"
+    networks:
+      - backend
       
   scrapyd:
     build: ./bertelscrapyd
@@ -38,10 +48,14 @@ services:
     environment:
       - INDEX_NAME
       - INDEX_BERT_NAME
+      - BOT_NAME
+      - USER_AGENT
     volumes:
       - ./scrapydata:/var/lib/scrapyd
       - /usr/local/lib/python3.7/dist-packages
     restart: unless-stopped
+    networks:
+      - backend
     
   scrapy:
     image: vimagick/scrapyd:py3
@@ -50,8 +64,12 @@ services:
       - ./scrapybatch:/code
     working_dir: /code
     restart: unless-stopped
+    networks:
+      - backend
 
-
+networks:
+  frontend:
+  backend:
 volumes:
   es-data:
     driver: local

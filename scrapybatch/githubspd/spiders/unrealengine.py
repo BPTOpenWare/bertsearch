@@ -3,11 +3,11 @@ import scrapy
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
 
-class ReadTheDocsSpider(CrawlSpider):
-    name = 'readthedocs'
-    allowed_domains = ['docs.scrapy.org']
+class UnrealEngineSpider(CrawlSpider):
+    name = 'unrealengine'
+    allowed_domains = ['docs.unrealengine.com']
     start_urls = [
-        'https://docs.scrapy.org/en/latest/index.html',
+        'https://docs.unrealengine.com/en-US/index.html',
     ]
 
     rules = (
@@ -20,6 +20,6 @@ class ReadTheDocsSpider(CrawlSpider):
         yield {
             'title': response.xpath("//title//text()").extract(),
             'url': response.urljoin(''),
-            'text': ''.join(response.xpath("//*[contains(concat(' ', normalize-space(@class), ' '), 'document')]//text()").extract()).strip()
+            'text': ''.join(response.xpath("//maincol//text()").extract()).strip()
             }
 

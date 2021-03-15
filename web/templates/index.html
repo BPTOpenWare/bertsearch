@@ -23,10 +23,15 @@
       <v-app-bar app color="blue darken-3" dark>
         <v-col cols="1">
           <v-toolbar-title class="ml-0 pl-4">
-            <span class="hidden-sm-and-down">BERT Search</span>
+            <span class="hidden-sm-and-down">Search</span>
           </v-toolbar-title>
         </v-col>
         <v-col cols="5">
+        <input type="radio" id="simple" value="simple" v-model="stype">
+        <label for="simple">Simple Search</label>
+        &nbsp;Or&nbsp;
+        <input type="radio" id="bert" value="bert" v-model="stype">
+        <label for="bert">Bert Search</label>
           <v-text-field v-model="query" v-on:keyup.enter="submit" flat solo-inverted hide-details
             prepend-inner-icon="search" label="Search" class="hidden-sm-and-down"></v-text-field>
         </v-col>
@@ -37,13 +42,11 @@
           <v-col cols="12" md="6" offset-md="1" offset-lg="1" offset-xl="1">
             <template v-if="'hits' in result">
               <v-card max-width="700" flat v-for="(item, index) in result.hits.hits" :key="index">
-                <v-card-title>[[ item._source.title ]]</v-card-title>
+                <v-card-title><a v-bind:href="item._source.url">[[ item._source.title ]]</a></v-card-title>
                 <v-card-text>[[ item._source.text.slice(0, 300) ]]...</v-card-text>
-                <!--
                 <v-card-actions>
                   <v-chip class="primary">[[ item._score ]]</v-chip>
                 </v-card-actions>
-              -->
               </v-card>
             </template>
           </v-col>
@@ -65,24 +68,32 @@
       delimiters: ['[[', ']]'],
       data: {
         query: '',
+        stype: 'simple',
         result: []
       },
       created() {
-        this.query = 'designer'
-        this.search()
+        this.query = '';
       },
       methods: {
         search() {
-          axios.get(`${base_url}searchsimple?q=${this.query}`).then(response => {
+          let searchtype = "searchbert";
+
+          if(this.stype === "simple") {
+            searchtype = "searchsimple";
+          }
+          
+          const searchurl = base_url + searchtype + "?q=" + this.query;
+          
+          axios.get(searchurl).then(response => {
             this.result = response.data;
-          })
+          });
         },
         submit() {
           if (this.query == '') {
             this.result = [];
             return;
           }
-          this.search()
+          this.search();
         }
       }
     })
