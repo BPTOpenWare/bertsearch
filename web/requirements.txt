@@ -4,4 +4,4 @@ Flask==1.1.1
 flask_httpauth==4.2.0
 werkzeug==1.0.1
 gunicorn==20.0.4
-
+pycurl==7.43.0

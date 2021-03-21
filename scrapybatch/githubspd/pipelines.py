@@ -14,6 +14,8 @@ from elasticsearch.helpers import bulk
 
 INDEX_NAME = os.environ['INDEX_NAME']
 INDEX_BERT_NAME = os.environ['INDEX_BERT_NAME']
+ES_ENDPOINT = os.environ.get('ES_ENDPOINT')
+BERT_ENDPOINT = os.environ.get('BERT_ENDPOINT')
 
 class GithubspdPipeline:
 
@@ -62,7 +64,7 @@ class GithubspdPipeline:
         alldocs.append(stddoc)
         
         # index
-        client = Elasticsearch('elasticsearch:9200')
+        client = Elasticsearch(ES_ENDPOINT)
         bulk(client, alldocs)
         
         return item
@@ -88,7 +90,7 @@ class GithubspdPipeline:
     @staticmethod  
     def bulk_predict(docs, batch_size=256):
         """Predict bert embeddings."""
-        bc = BertClient(ip='bertserving', output_fmt='list')
+        bc = BertClient(ip=BERT_ENDPOINT, output_fmt='list')
         for i in range(0, len(docs), batch_size):
             batch_docs = docs[i: i+batch_size]
             embeddings = bc.encode(batch_docs, blocking=True)

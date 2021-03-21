@@ -10,6 +10,9 @@ services:
       - DEFUSR
       - BERTADM
       - SEARCH_SIZE
+      - KICKOFF_URL
+      - BERT_ENDPOINT
+      - ES_ENDPOINT
     depends_on:
       - elasticsearch
       - bertserving
@@ -50,13 +53,15 @@ services:
       - INDEX_BERT_NAME
       - BOT_NAME
       - USER_AGENT
+      - BERT_ENDPOINT
+      - ES_ENDPOINT
     volumes:
       - ./scrapydata:/var/lib/scrapyd
       - /usr/local/lib/python3.7/dist-packages
     restart: unless-stopped
     networks:
       - backend
-    
+
   scrapy:
     image: vimagick/scrapyd:py3
     command: bash
@@ -66,7 +71,7 @@ services:
     restart: unless-stopped
     networks:
       - backend
-
+      
 networks:
   frontend:
   backend:

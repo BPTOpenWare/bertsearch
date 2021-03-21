@@ -1,17 +1,27 @@
 import os
-from pprint import pprint
+import pycurl
 
-from flask import Flask, render_template, jsonify, request, send_from_directory
+from pprint import pprint
+from flask import Flask, render_template, jsonify, request, send_from_directory, make_response
 from elasticsearch import Elasticsearch
 from bert_serving.client import BertClient
 from flask_httpauth import HTTPBasicAuth
 from werkzeug.security import generate_password_hash, check_password_hash
+from urllib.parse import urlencode
 
+try:
+    from io import BytesIO
+except ImportError:
+    from StringIO import StringIO as BytesIO
+    
 SEARCH_SIZE = 100
 INDEX_NAME = os.environ['INDEX_NAME']
 INDEX_BERT_NAME = os.environ['INDEX_BERT_NAME']
 GENERIC_PWORD = os.environ.get('DEFUSR')
 ADMIN_PWORD = os.environ.get('BERTADM')
+KICKOFF_URL = os.environ.get('KICKOFF_URL')
+ES_ENDPOINT = os.environ.get('ES_ENDPOINT')
+BERT_ENDPOINT = os.environ.get('BERT_ENDPOINT')
 app = Flask(__name__, static_folder='static')
 auth = HTTPBasicAuth()
 
@@ -32,7 +42,10 @@ def verify_password(username, password):
             check_password_hash(users.get(username), password):
         return username
         
-        
+@auth.get_user_roles
+def get_user_roles(user):
+    return roles[user]
+    
 @app.route('/')
 @auth.login_required
 def index():
@@ -46,11 +59,39 @@ def send_js(path):
 def send_css(path):
     return send_from_directory('css', path)
 
-
+@app.route('/startjob')
+@auth.login_required(role='admin')
+def kickoff_job():
+    job = request.args.get('job')
+       
+    if len(job) > 0 and len(job) < 20:
+        c = pycurl.Curl()
+        c.setopt(c.URL,KICKOFF_URL)
+        post_data = {'project': 'githubspd', 'spider': job}
+        postfields = urlencode(post_data)
+        c.setopt(c.POSTFIELDS, postfields)
+        buffer = BytesIO()
+        c.setopt(c.WRITEDATA, buffer)
+        c.perform()
+        
+        if c.getinfo(c.RESPONSE_CODE) == 200:
+            c.close()
+            response = make_response("JOB STARTED", 200)
+            response.mimetype = "text/plain"
+        else:
+            c.close()
+            response = make_response("SCRAPYD ERROR", 500)
+            response.mimetype = "text/plain" 
+    else:
+        response = make_response("JOB NAME ERROR", 500)
+        response.mimetype = "text/plain"        
+    
+    return response    
+        
 @app.route('/createindex')
 @auth.login_required(role='admin')
 def create_index():
-    client = Elasticsearch('elasticsearch:9200')
+    client = Elasticsearch(ES_ENDPOINT)
     client.indices.delete(index=INDEX_NAME, ignore=[404])
     client.indices.delete(index=INDEX_BERT_NAME, ignore=[404])
     with open('simpleindex.json') as index_file:
@@ -64,8 +105,8 @@ def create_index():
 @app.route('/searchbert')
 @auth.login_required
 def analyzerbert():
-    bc = BertClient(ip='bertserving', output_fmt='list')
-    client = Elasticsearch('elasticsearch:9200')
+    bc = BertClient(ip=BERT_ENDPOINT, output_fmt='list')
+    client = Elasticsearch(ES_ENDPOINT)
 
     query = request.args.get('q')
     query_vector = bc.encode([query])[0]
@@ -96,7 +137,7 @@ def analyzerbert():
 @app.route('/searchsimple')
 @auth.login_required
 def analyzer():
-    client = Elasticsearch('elasticsearch:9200')
+    client = Elasticsearch(ES_ENDPOINT)
 
     query = request.args.get('q')
 
