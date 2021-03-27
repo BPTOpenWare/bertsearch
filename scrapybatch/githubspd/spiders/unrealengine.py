@@ -20,6 +20,6 @@ class UnrealEngineSpider(CrawlSpider):
         yield {
             'title': response.xpath("//title//text()").extract(),
             'url': response.urljoin(''),
-            'text': ''.join(response.xpath("//maincol//text()").extract()).strip()
+            'text': ''.join(response.xpath('//div[@id="maincol"]//text()').extract()).strip()
             }
 

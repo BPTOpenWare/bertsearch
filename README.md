@@ -38,7 +38,7 @@ The model is currenlt configured for uncased 1024 per the .env file.
 </details>
 
 ```bash
-$ wget https://storage.googleapis.com/bert_models/2018_10_18/cased_L-12_H-768_A-12.zip
+$ wget https://storage.googleapis.com/bert_models/2018_10_18/uncased_L-24_H-1024_A-16.zip
 $ unzip cased_L-12_H-768_A-12.zip
 ```
 

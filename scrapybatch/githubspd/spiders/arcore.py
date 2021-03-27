@@ -23,6 +23,6 @@ class ARCoreSpider(CrawlSpider):
         yield {
             'title': response.xpath("//title//text()").extract(),
             'url': response.urljoin(''),
-            'text': ''.join(response.xpath("//*[contains(concat(' ', normalize-space(@class), ' '), 'devsite-article')]//text()").extract()).strip()
+            'text': ''.join(response.xpath("//*[contains(concat(' ', normalize-space(@class), ' '), 'devsite-article-body')]//text()").extract()).strip()
             }
 
