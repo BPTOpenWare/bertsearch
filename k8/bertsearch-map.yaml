@@ -1,0 +1,41 @@
+apiVersion: v1
+data:
+  BERT_ENDPOINT: bertserving-service
+  BERTADM: something
+  BOT_NAME: githubspd
+  DEFUSR: somethingtwo
+  ES_ENDPOINT: bert-elasticsearch-service:9200
+  INDEX_BERT_NAME: testbertsearch
+  INDEX_NAME: testsearch
+  KICKOFF_URL: http://scrapyd-service:6800/schedule.json
+  PATH_MODEL: /mode
+  SCRAPYD_ENDPOINT: scrapyd-service
+  SEARCH_SIZE: "100"
+  USER_AGENT: githubspd (+http://www.bluffpointtech.com)
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2021-03-28T01:22:14Z"
+  managedFields:
+  - apiVersion: v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:data:
+        .: {}
+        f:BERT_ENDPOINT: {}
+        f:BERTADM: {}
+        f:BOT_NAME: {}
+        f:DEFUSR: {}
+        f:ES_ENDPOINT: {}
+        f:INDEX_BERT_NAME: {}
+        f:INDEX_NAME: {}
+        f:KICKOFF_URL: {}
+        f:PATH_MODEL: {}
+        f:SCRAPYD_ENDPOINT: {}
+        f:SEARCH_SIZE: {}
+        f:USER_AGENT: {}
+    manager: kubectl
+    operation: Update
+    time: "2021-03-28T01:22:14Z"
+  name: bertsearch-map
+  namespace: default
+

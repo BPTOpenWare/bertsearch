@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bertserving
+  labels:
+    name: bertserving
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bertserving
+  template:
+    metadata:
+      labels:
+        app: bertserving
+    spec:
+      containers:
+      - image: us.gcr.io/YOURPROJECT/bertsearch_bertserving
+        name: bertserving
+        resources:
+          limits:
+           nvidia.com/gpu: 1
+        ports:
+        - containerPort: 5555
+          containerPort: 5556
+      tolerations:
+      - key: nvidia.com/gpu
+        operator: Equal
+        value: present
+        effect: NoSchedule
+---
+# Request a clusterip internal service.
+apiVersion: v1
+kind: Service
+metadata:
+  name: bertserving-service
+spec:
+  selector:
+    app: bertserving
+  type: ClusterIP
+  ports:
+  - name: bertserviceport1
+    protocol: TCP
+    port: 5555
+    targetPort: 5555
+  - name: bertserviceport2
+    protocol: TCP
+    port: 5556
+    targetPort: 5556
+

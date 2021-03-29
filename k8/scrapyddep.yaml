@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scrapyd
+  labels:
+    name: scrapyd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scrapyd
+  template:
+    metadata:
+      labels:
+        app: scrapyd
+    spec:
+      containers:
+      - image: us.gcr.io/YOURPROJECT/bertsearch_scrapyd
+        name: scrapyd
+        ports:
+        - containerPort: 6800
+        env:
+          - name: INDEX_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: bertsearch-map
+                key: INDEX_NAME
+          - name: INDEX_BERT_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: bertsearch-map
+                key: INDEX_BERT_NAME
+          - name: BOT_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: bertsearch-map
+                key: BOT_NAME
+          - name: USER_AGENT
+            valueFrom:
+              configMapKeyRef:
+                name: bertsearch-map
+                key: USER_AGENT
+          - name: BERT_ENDPOINT
+            valueFrom:
+              configMapKeyRef:
+                name: bertsearch-map
+                key: BERT_ENDPOINT
+          - name: SCRAPYD_ENDPOINT
+            valueFrom:
+              configMapKeyRef:
+                name: bertsearch-map
+                key: SCRAPYD_ENDPOINT
+          - name: ES_ENDPOINT
+            valueFrom:
+              configMapKeyRef:
+                name: bertsearch-map
+                key: ES_ENDPOINT
+---
+# Request a clusterip internal service.
+apiVersion: v1
+kind: Service
+metadata:
+  name: scrapyd-service
+spec:
+  selector:
+    app: scrapyd
+  type: ClusterIP
+  ports:
+  - name: scrapydport
+    protocol: TCP
+    port: 6800
+    targetPort: 6800
+

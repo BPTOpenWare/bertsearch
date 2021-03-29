@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bertsearch-web
+  labels:
+    name: bertsearch-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bertsearch-web
+  template:
+    metadata:
+      labels:
+        app: bertsearch-web
+    spec:
+      containers:
+      - image: us.gcr.io/YOURPROJECT/bertsearch_web
+        name: bertsearch-web
+        ports:
+        - containerPort: 5000
+        env:
+          - name: INDEX_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: bertsearch-map
+                key: INDEX_NAME
+          - name: INDEX_BERT_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: bertsearch-map
+                key: INDEX_BERT_NAME
+          - name: DEFUSR
+            valueFrom:
+              configMapKeyRef:
+                name: bertsearch-map
+                key: DEFUSR
+          - name: BERTADM
+            valueFrom:
+              configMapKeyRef:
+                name: bertsearch-map
+                key: BERTADM
+          - name: SEARCH_SIZE
+            valueFrom:
+              configMapKeyRef:
+                name: bertsearch-map
+                key: SEARCH_SIZE
+          - name: KICKOFF_URL
+            valueFrom:
+              configMapKeyRef:
+                name: bertsearch-map
+                key: KICKOFF_URL
+          - name: BERT_ENDPOINT
+            valueFrom:
+              configMapKeyRef:
+                name: bertsearch-map
+                key: BERT_ENDPOINT
+          - name: ES_ENDPOINT
+            valueFrom:
+              configMapKeyRef:
+                name: bertsearch-map
+                key: ES_ENDPOINT
+
